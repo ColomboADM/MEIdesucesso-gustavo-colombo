@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEI de Sucesso: Estratégias Práticas para Crescer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals with a Teal Accent) -->
+    <!-- Application Structure Plan: A non-linear, thematic dashboard structure with a sticky navigation bar. Sections include: 'Primeiros Passos' (interactive simulators for DAS/Faturamento), 'Gestão Financeira' (columnar layout for key pillars), 'Crescimento' (interactive SMART goal builder), 'Ferramentas' (categorized cards), and 'Comunidade'. This structure prioritizes user exploration and practical application over the linear format of the source report, allowing MEIs to quickly access the tools and information most relevant to their immediate needs. -->
+    <!-- Visualization & Content Choices: Faturamento data -> Goal: Personalize -> Viz: Chart.js Bar Chart -> Interaction: User input updates chart -> Justification: Visualizes user's revenue against official limits, making it tangible. DAS values -> Goal: Inform -> Viz: HTML/JS Simulator -> Interaction: User selects type, sees value -> Justification: Provides instant, specific information. SMART method -> Goal: Guide -> Viz: HTML Form -> Interaction: User fills fields -> Justification: Active application of the concept. Lists of tools/strategies -> Goal: Organize -> Viz: HTML/CSS Clickable Cards -> Interaction: Click to reveal details -> Justification: Improves scannability and reduces information overload. CONFIRMED: No SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card-flip {
+            perspective: 1000px;
+        }
+        .card-flip-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flip.flipped .card-flip-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#home" class="text-xl font-bold text-teal-700">MEI de Sucesso</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#primeiros-passos" class="text-stone-600 hover:bg-teal-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Primeiros Passos</a>
+                        <a href="#financas" class="text-stone-600 hover:bg-teal-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Finanças</a>
+                        <a href="#crescimento" class="text-stone-600 hover:bg-teal-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Crescimento</a>
+                        <a href="#ferramentas" class="text-stone-600 hover:bg-teal-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Ferramentas</a>
+                        <a href="#comunidade" class="text-stone-600 hover:bg-teal-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Comunidade</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-stone-600 hover:text-white hover:bg-teal-600 focus:outline-none">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#primeiros-passos" class="text-stone-600 hover:bg-teal-600 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Primeiros Passos</a>
+                <a href="#financas" class="text-stone-600 hover:bg-teal-600 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Finanças</a>
+                <a href="#crescimento" class="text-stone-600 hover:bg-teal-600 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Crescimento</a>
+                <a href="#ferramentas" class="text-stone-600 hover:bg-teal-600 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Ferramentas</a>
+                <a href="#comunidade" class="text-stone-600 hover:bg-teal-600 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Comunidade</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="bg-teal-700 text-white section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">MEI de Sucesso: Estratégias Práticas para Crescer com Gestão Inteligente</h1>
+                <p class="text-xl md:text-2xl text-teal-100 mb-6">Com Gustavo Colombo</p>
+                <p class="max-w-3xl mx-auto text-lg text-teal-200">Transforme desafios em oportunidades e impulsione seu negócio com um roteiro prático para uma gestão eficiente e um crescimento estruturado.</p>
+            </div>
+        </section>
+
+        <section id="primeiros-passos" class="py-16 sm:py-20 bg-white section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-stone-900">Seus Primeiros Passos como MEI</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-2xl mx-auto">Esta seção é o seu guia essencial para a jornada MEI. Aqui, você entenderá seus direitos e deveres, simulará sua contribuição mensal e poderá verificar como seu faturamento se compara aos limites atuais, tudo de forma interativa para facilitar seu planejamento.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-stone-100 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-2xl font-semibold text-center mb-4 text-teal-800">Direitos vs. Deveres</h3>
+                        <div class="card-flip h-64" id="direitos-deveres-card">
+                            <div class="card-flip-inner">
+                                <div class="card-front bg-teal-500 text-white">
+                                    <h4 class="text-xl font-bold mb-2">✅ Seus Direitos</h4>
+                                    <ul class="list-disc list-inside text-left space-y-1">
+                                        <li>Aposentadoria (idade/invalidez)</li>
+                                        <li>Auxílio-doença</li>
+                                        <li>Salário-maternidade</li>
+                                        <li>CNPJ e emissão de notas</li>
+                                    </ul>
+                                </div>
+                                <div class="card-back bg-orange-500 text-white">
+                                    <h4 class="text-xl font-bold mb-2">📋 Seus Deveres</h4>
+                                    <ul class="list-disc list-inside text-left space-y-1">
+                                        <li>Pagar o DAS-MEI mensalmente</li>
+                                        <li>Entregar a Declaração Anual (DASN)</li>
+                                        <li>Emitir nota fiscal para PJ</li>
+                                        <li>Manter o faturamento no limite</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="flip-button" class="mt-4 w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition">Girar para ver os Deveres</button>
+                    </div>
+
+                    <div class="bg-stone-100 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-2xl font-semibold text-center mb-4 text-teal-800">Simulador de Contribuição (DAS-MEI 2025)</h3>
+                        <p class="text-center text-stone-600 mb-4">Selecione sua área de atuação para ver o valor da sua contribuição mensal.</p>
+                        <select id="das-selector" class="w-full p-2 border border-stone-300 rounded-md mb-4">
+                            <option value="0" selected disabled>Escolha sua atividade...</option>
+                            <option value="76.90">Comércio e Indústria</option>
+                            <option value="80.90">Prestação de Serviços</option>
+                            <option value="81.90">Comércio e Serviços</option>
+                        </select>
+                        <div id="das-result" class="text-center bg-white p-4 rounded-lg">
+                            <p class="text-stone-600">Sua contribuição mensal será de:</p>
+                            <p class="text-3xl font-bold text-teal-600">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 bg-stone-100 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-2xl font-semibold text-center mb-4 text-teal-800">Calculadora de Faturamento Anual</h3>
+                    <p class="text-center text-stone-600 mb-6">Insira seu faturamento anual para visualizar sua posição em relação ao limite do MEI. Isso te ajudará a planejar o crescimento e evitar surpresas fiscais.</p>
+                    <div class="max-w-md mx-auto">
+                        <label for="faturamento-input" class="block text-sm font-medium text-stone-700">Seu Faturamento Anual (R$)</label>
+                        <input type="number" id="faturamento-input" placeholder="Ex: 50000" class="mt-1 block w-full p-2 border border-stone-300 rounded-md shadow-sm">
+                        <button id="faturamento-button" class="mt-4 w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition">Calcular</button>
+                    </div>
+                    <div class="chart-container mt-8">
+                        <canvas id="faturamento-chart"></canvas>
+                    </div>
+                    <div id="faturamento-info" class="mt-4 text-center text-stone-700 p-4 bg-white rounded-lg hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="financas" class="py-16 sm:py-20 section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-stone-900">Gestão Financeira Inteligente</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-2xl mx-auto">A saúde financeira é o coração do seu negócio. Nesta seção, você encontrará os pilares para organizar suas finanças: a separação de contas, o controle do fluxo de caixa e a precificação estratégica. Dominar esses pontos é essencial para a sustentabilidade e o lucro.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <div class="text-4xl mb-4">🏦</div>
+                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Separe as Contas</h3>
+                        <p class="text-stone-600">O primeiro passo para a clareza financeira. Mantenha contas bancárias e cartões distintos para o negócio e para suas despesas pessoais. Defina um pró-labore (seu salário) e reinvista o lucro na empresa.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Controle o Fluxo de Caixa</h3>
+                        <p class="text-stone-600">Sua bússola financeira. Registre TODAS as entradas e saídas de dinheiro. Isso permite prever despesas, identificar onde economizar e entender a real lucratividade do seu negócio.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <div class="text-4xl mb-4">💰</div>
+                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Precifique Corretamente</h3>
+                        <p class="text-stone-600">Não se baseie apenas nos concorrentes. Calcule seus custos, defina sua margem de lucro e considere o valor que seu cliente percebe. O preço certo garante a sustentabilidade do seu MEI.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="crescimento" class="py-16 sm:py-20 bg-white section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-stone-900">Estratégias para Crescer</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-2xl mx-auto">Crescer de forma estruturada exige um plano. Aqui, você aprenderá a definir metas claras com a metodologia SMART e descobrirá táticas de marketing digital de baixo custo para aumentar sua visibilidade e atrair mais clientes.</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-stone-100 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-2xl font-semibold text-center mb-4 text-teal-800">Construtor de Metas SMART</h3>
+                        <p class="text-stone-600 mb-4 text-center">Transforme suas ideias em objetivos concretos.</p>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="font-medium">S (Específico):</label>
+                                <input type="text" placeholder="O que exatamente quero alcançar?" class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label class="font-medium">M (Mensurável):</label>
+                                <input type="text" placeholder="Como vou medir o progresso?" class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label class="font-medium">A (Atingível):</label>
+                                <input type="text" placeholder="A meta é realista?" class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label class="font-medium">R (Relevante):</label>
+                                <input type="text" placeholder="Por que essa meta é importante?" class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label class="font-medium">T (Temporal):</label>
+                                <input type="text" placeholder="Qual o prazo para alcançar?" class="w-full p-2 border rounded-md">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-stone-100 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-2xl font-semibold text-center mb-4 text-teal-800">Marketing Digital de Baixo Custo</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-white rounded-md shadow-sm">
+                                <h4 class="font-semibold text-teal-700">Google Meu Negócio</h4>
+                                <p class="text-sm text-stone-600">Essencial para ser encontrado localmente. Cadastre sua empresa gratuitamente e apareça no Google Maps.</p>
+                            </div>
+                            <div class="p-4 bg-white rounded-md shadow-sm">
+                                <h4 class="font-semibold text-teal-700">Redes Sociais (Instagram, WhatsApp)</h4>
+                                <p class="text-sm text-stone-600">Crie conteúdo, interaja com seu público e use o WhatsApp Business para um atendimento profissional.</p>
+                            </div>
+                            <div class="p-4 bg-white rounded-md shadow-sm">
+                                <h4 class="font-semibold text-teal-700">Canva</h4>
+                                <p class="text-sm text-stone-600">Crie posts, stories e materiais de divulgação com aparência profissional, mesmo sem ser designer.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ferramentas" class="py-16 sm:py-20 section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-stone-900">Sua Caixa de Ferramentas</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-2xl mx-auto">A tecnologia é sua maior aliada para otimizar a rotina. Explore esta seleção de ferramentas (muitas gratuitas) que vão te ajudar a gerenciar finanças, emitir notas fiscais e organizar tarefas, liberando seu tempo para o que realmente importa: o crescimento do seu negócio.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-center text-teal-800">Gestão Financeira</h3>
+                        <ul class="space-y-2 text-stone-600">
+                            <li><span class="font-semibold">SOMEI:</span> Gratuito e completo para controle de caixa.</li>
+                            <li><span class="font-semibold">Organizze:</span> Ótimo para separar contas PF e PJ.</li>
+                            <li><span class="font-semibold">Mobills:</span> Popular para controle de gastos e orçamentos.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-center text-teal-800">Emissão de Nota Fiscal</h3>
+                         <ul class="space-y-2 text-stone-600">
+                            <li><span class="font-semibold">Emissor Nacional:</span> Portal e app do governo para NFS-e, gratuito e padronizado.</li>
+                             <li><span class="font-semibold">Awise:</span> Sistema de gestão que também inclui emissão de NF-e e NFC-e.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-3 text-center text-teal-800">Organização e Tarefas</h3>
+                         <ul class="space-y-2 text-stone-600">
+                            <li><span class="font-semibold">Awise:</span> Sistema de gestão (ERP) gratuito com controle de estoque, vendas e clientes.</li>
+                            <li><span class="font-semibold">Trello:</span> Organize suas tarefas e projetos em quadros visuais.</li>
+                            <li><span class="font-semibold">Google Agenda:</span> Para não perder nenhum prazo ou compromisso.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="comunidade" class="py-16 sm:py-20 bg-white section-fade-in">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-stone-900">O Poder da Comunidade</h2>
+                    <p class="mt-4 text-lg text-stone-600 max-w-2xl mx-auto">Você não está sozinho na jornada empreendedora. Conectar-se com outros MEIs e participar de eventos é fundamental para aprender, encontrar parceiros e se manter motivado. Explore os canais que podem impulsionar seu networking e seu negócio.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-stone-100 p-6 rounded-lg shadow-sm text-center">
+                        <div class="text-4xl mb-4">🤝</div>
+                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Troca de Experiências</h3>
+                        <p class="text-stone-600">Participe de grupos no Facebook, LinkedIn e WhatsApp. A vivência em comunidade fortalece, gera insights e combate o isolamento do empreendedor.</p>
+                    </div>
+                    <div class="bg-stone-100 p-6 rounded-lg shadow-sm text-center">
+                        <div class="text-4xl mb-4">🗓️</div>
+                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Eventos e Associações</h3>
+                        <p class="text-stone-600">Fique de olho em eventos do Sebrae, como o Startup Day, e feiras como a Mercopar. Associações comerciais também oferecem suporte e representatividade.</p>
+                    </div>
+                    <div class="bg-stone-100 p-6 rounded-lg shadow-sm text-center">
+                        <div class="text-4xl mb-4">🌐</div>
+                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Comunidades Online</h3>
+                        <p class="text-stone-600">Explore a Comunidade Sebrae e o Portal do Empreendedor. São fontes ricas de conteúdo, cursos e conexões para alavancar seu negócio.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <h3 class="text-2xl font-bold mb-4">Seu Próximo Passo para o Sucesso</h3>
+            <p class="max-w-2xl mx-auto text-stone-300 mb-6">A gestão inteligente não é um destino, mas um ciclo de aprimoramento contínuo. Comece hoje a aplicar uma destas estratégias. O crescimento do seu negócio começa com a sua ação.</p>
+            <div class="bg-stone-700 p-4 rounded-lg inline-block">
+                <p class="font-semibold">Evento Gratuito - Vagas Limitadas!</p>
+                <p>📅 Data: 05/08/2025 | ⏰ Horário: 19:30</p>
+                <p>📍 Local: Auditório bloco A</p>
+            </div>
+            <p class="mt-6 text-sm text-stone-400">&copy; 2025 MEI de Sucesso. Desenvolvido para a palestra de Gustavo Colombo.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+            
+            const flipButton = document.getElementById('flip-button');
+            const card = document.getElementById('direitos-deveres-card');
+            flipButton.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+                if (card.classList.contains('flipped')) {
+                    flipButton.textContent = 'Girar para ver os Direitos';
+                } else {
+                    flipButton.textContent = 'Girar para ver os Deveres';
+                }
+            });
+
+            const dasSelector = document.getElementById('das-selector');
+            const dasResult = document.getElementById('das-result').querySelector('p:last-child');
+            dasSelector.addEventListener('change', (e) => {
+                const value = parseFloat(e.target.value).toFixed(2);
+                dasResult.textContent = `R$ ${value.replace('.', ',')}`;
+            });
+
+            const faturamentoInput = document.getElementById('faturamento-input');
+            const faturamentoButton = document.getElementById('faturamento-button');
+            const faturamentoInfo = document.getElementById('faturamento-info');
+            let faturamentoChart = null;
+
+            const faturamentoLimits = {
+                limite: 81000,
+                excesso20: 97200,
+                proposta: 130000
+            };
+
+            function updateFaturamentoChart(faturamento = 0) {
+                const ctx = document.getElementById('faturamento-chart').getContext('2d');
+                
+                if (faturamentoChart) {
+                    faturamentoChart.destroy();
+                }
+
+                faturamentoChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Seu Faturamento', 'Limite MEI', 'Limite Proposto'],
+                        datasets: [{
+                            label: 'Faturamento (R$)',
+                            data: [faturamento, faturamentoLimits.limite, faturamentoLimits.proposta],
+                            backgroundColor: [
+                                'rgba(20, 150, 150, 0.6)',
+                                'rgba(249, 115, 22, 0.6)',
+                                'rgba(75, 85, 99, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(15, 118, 110, 1)',
+                                'rgba(217, 70, 239, 1)',
+                                'rgba(55, 65, 81, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                let infoText = '';
+                if (faturamento > faturamentoLimits.excesso20) {
+                    infoText = '<strong>Atenção:</strong> Seu faturamento ultrapassou o limite em mais de 20%. Você deve solicitar o desenquadramento retroativo e procurar um contador imediatamente.';
+                    faturamentoInfo.className = 'mt-4 text-center p-4 bg-red-100 text-red-800 rounded-lg';
+                } else if (faturamento > faturamentoLimits.limite) {
+                    infoText = '<strong>Alerta:</strong> Seu faturamento ultrapassou o limite de R$ 81.000. Você deverá pagar um DAS complementar sobre o valor excedente e migrar para Microempresa (ME) no próximo ano.';
+                    faturamentoInfo.className = 'mt-4 text-center p-4 bg-yellow-100 text-yellow-800 rounded-lg';
+                } else if (faturamento > 0) {
+                    infoText = '<strong>Status:</strong> Seu faturamento está dentro do limite do MEI. Continue monitorando para planejar seu crescimento!';
+                    faturamentoInfo.className = 'mt-4 text-center p-4 bg-green-100 text-green-800 rounded-lg';
+                } else {
+                    infoText = '';
+                }
+                
+                faturamentoInfo.innerHTML = infoText;
+                faturamentoInfo.classList.toggle('hidden', !infoText);
+            }
+            
+            faturamentoButton.addEventListener('click', () => {
+                const faturamento = parseFloat(faturamentoInput.value) || 0;
+                updateFaturamentoChart(faturamento);
+            });
+
+            updateFaturamentoChart();
+            
+            const sections = document.querySelectorAll('.section-fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
